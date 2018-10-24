@@ -9,4 +9,5 @@ trait StatefulSteps[A] extends ScalaDsl with EN with Matchers {
 
 object StatefulSteps {
   trait State
+  case class OfferServiceState() extends State
 }
