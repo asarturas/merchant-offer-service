@@ -9,5 +9,4 @@ trait StatefulSteps[A] extends ScalaDsl with EN with Matchers {
 
 object StatefulSteps {
   trait State
-  case class HelloWorldState(name: Option[String] = None, message: Option[String] = None) extends State
 }
