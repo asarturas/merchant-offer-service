@@ -1,7 +1,7 @@
 package com.spikerlabs.offers.storage
 
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{ArticleId, OfferId, OfferIdGenerator}
+import com.spikerlabs.offers.domain.Offer.{ArticleId, Discount, OfferId, OfferIdGenerator}
 import org.scalatest.{FlatSpec, Matchers}
 
 class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
@@ -29,6 +29,13 @@ class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
     val otherOffer = Offer.fromStrings("desc2", otherArticle, "£20", "1 day", "OFFER2").get
     store.store(oneOffer).flatMap(_.store(otherOffer)) shouldBe Right(store)
     store.getOffers(ArticleId(otherArticle)) should contain allElementsOf List(otherOffer)
+  }
+  it should "replace existing value without an issue" in new Setup {
+    val offer = Offer.fromStrings("desc", "A123", "£10", "1 day").get
+    store.store(offer)
+    val updatedOffer = offer.copy(discount = Discount(15.0))
+    store.store(updatedOffer) shouldBe Right(store)
+    store.getOffers(ArticleId("A123")) shouldBe List(updatedOffer)
   }
   trait Setup {
     implicit val staticOfferId: OfferIdGenerator = () => OfferId("OFFER1")
