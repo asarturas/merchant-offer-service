@@ -1,6 +1,6 @@
 package com.spikerlabs.offers.domain
 
-import com.spikerlabs.offers.domain.Offer.{ArticleId, Discount, ValidFor}
+import com.spikerlabs.offers.domain.Offer.{ArticleId, Discount, OfferId, OfferIdGenerator, ValidFor}
 import org.scalatest.{FlatSpec, Matchers}
 
 class OfferSpec extends FlatSpec with Matchers {
@@ -20,8 +20,12 @@ class OfferSpec extends FlatSpec with Matchers {
     ValidFor.fromString("") shouldBe None
   }
   "offer factory" should "return some offer for string with valid data" in {
-    Offer.fromStrings("description", "A123", "£10.00", "1 day") shouldBe
-      Some(Offer("description", ArticleId("A123"), Discount(10.00), ValidFor("1 day")))
+    Offer.fromStrings("description", "A123", "£10.00", "1 day", "OFFER2") shouldBe
+    Some(Offer("description", ArticleId("A123"), Discount(10.00), ValidFor("1 day"), OfferId("OFFER2")))
+  }
+  it should "use offer id generator when no id is passed to the factory" in {
+    implicit val staticOfferId: OfferIdGenerator = () => OfferId("OFFER1")
+    Offer.fromStrings("description", "A123", "£10", "1 day").get.id shouldBe OfferId("OFFER1")
   }
   it should "return none when discount cannot be parsed" in {
     Offer.fromStrings("description", "A123", "x", "1 day") shouldBe

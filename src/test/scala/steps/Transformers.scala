@@ -1,7 +1,9 @@
 package steps
 
 import com.spikerlabs.offers.domain.Offer
+import com.spikerlabs.offers.domain.Offer.{OfferId, OfferIdGenerator}
 import cucumber.api.DataTable
+
 import collection.JavaConverters._
 
 trait Transformers {
@@ -9,13 +11,16 @@ trait Transformers {
     singleOfferTableToInformation _ andThen singleOfferInformationToOffer
   private def singleOfferTableToInformation(singleOfferTable: DataTable): Map[String, String] =
     singleOfferTable.asMap(classOf[String], classOf[String]).asScala.toMap
-  private def singleOfferInformationToOffer(singleOfferInformation: Map[String, String]): Offer =
+  private def singleOfferInformationToOffer(singleOfferInformation: Map[String, String]): Offer = {
+    implicit val generateIdByArticleId: OfferIdGenerator = () =>
+      OfferId(singleOfferInformation("target article"))
     Offer.fromStrings(
       description = singleOfferInformation("description"),
       articleId = singleOfferInformation("target article"),
       discount = singleOfferInformation("discount"),
       validFor = singleOfferInformation("valid for")
     ).get
+  }
 
   def multipleOffersTableToOffers: DataTable => List[Offer] =
     multipleOffersTableToInformation _ andThen multipleOffersInformationToOffers
