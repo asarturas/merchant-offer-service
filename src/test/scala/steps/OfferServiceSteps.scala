@@ -15,7 +15,7 @@ class OfferServiceSteps extends StatefulSteps[OfferServiceState] with Transforme
     val offer = singleOfferTableToOffer(singleOfferTable)
     state.store.store(offer)
   }
-  Then("""^I should receive (\d+) offer for article "([^"]*)":$""") { (expectedNumberOfOffers: Int, articleId: String, expectedOffersTable: DataTable) =>
+  Then("""^I should receive (\d+) offer for product "([^"]*)":$""") { (expectedNumberOfOffers: Int, articleId: String, expectedOffersTable: DataTable) =>
     val matchingOffers = state.store.getOffers(ArticleId(articleId))
     matchingOffers should have size expectedNumberOfOffers
 
