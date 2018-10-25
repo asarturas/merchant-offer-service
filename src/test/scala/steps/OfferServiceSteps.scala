@@ -1,16 +1,15 @@
 package steps
 
-import java.util
-
-import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{ArticleId, Discount, ValidFor}
-import cucumber.api.{DataTable, PendingException}
+import com.spikerlabs.offers.domain.Offer.ArticleId
+import cucumber.api.DataTable
 import steps.StatefulSteps.OfferServiceState
 
-import collection.JavaConverters._
-
 class OfferServiceSteps extends StatefulSteps[OfferServiceState] with Transformers {
-  var state: OfferServiceState = OfferServiceState()
+  var state: OfferServiceState = _
+
+  Given("""^There is completely fresh data store$""") { () =>
+    state = OfferServiceState()
+  }
 
   When("""^I create a fixed price offer:$""") { (singleOfferTable: DataTable) =>
     val offer = singleOfferTableToOffer(singleOfferTable)

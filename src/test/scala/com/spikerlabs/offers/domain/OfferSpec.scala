@@ -21,7 +21,7 @@ class OfferSpec extends FlatSpec with Matchers {
   }
   "offer factory" should "return some offer for string with valid data" in {
     Offer.fromStrings("description", "A123", "£10.00", "1 day", "OFFER2") shouldBe
-    Some(Offer("description", ArticleId("A123"), Discount(10.00), ValidFor("1 day"), OfferId("OFFER2")))
+    Some(Offer("description", List(ArticleId("A123")), Discount(10.00), ValidFor("1 day"), OfferId("OFFER2")))
   }
   it should "use offer id generator when no id is passed to the factory" in {
     implicit val staticOfferId: OfferIdGenerator = () => OfferId("OFFER1")

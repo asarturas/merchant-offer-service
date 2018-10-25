@@ -13,10 +13,10 @@ trait Transformers {
     singleOfferTable.asMap(classOf[String], classOf[String]).asScala.toMap
   private def singleOfferInformationToOffer(singleOfferInformation: Map[String, String]): Offer = {
     implicit val generateIdByArticleId: OfferIdGenerator = () =>
-      OfferId(singleOfferInformation("target article"))
+      OfferId(singleOfferInformation("target articles"))
     Offer.fromStrings(
       description = singleOfferInformation("description"),
-      articleId = singleOfferInformation("target article"),
+      articleIds = singleOfferInformation("target articles"),
       discount = singleOfferInformation("discount"),
       validFor = singleOfferInformation("valid for")
     ).get

@@ -31,7 +31,7 @@ class InMemoryOfferStore extends OfferStore {
 
   def getOffers(article: Offer.ArticleId): List[Offer] =
     inMemoryStorage.filter {
-      case (_, Offer(_, offerArticle, _, _, _)) if article == offerArticle => true
+      case (_, Offer(_, offerArticles, _, _, _)) => offerArticles.contains(article)
       case _ => false
     }.values.toList
 }

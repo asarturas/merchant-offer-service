@@ -6,18 +6,19 @@ import com.spikerlabs.offers.domain.Offer.{ArticleId, Discount, OfferId, ValidFo
 
 import scala.util.matching.Regex
 
-case class Offer(description: String, articleId: ArticleId, discount: Discount, validFor: ValidFor, id: OfferId)
+case class Offer(description: String, articleIds: List[ArticleId], discount: Discount, validFor: ValidFor, id: OfferId)
 
 object Offer {
   type OfferIdGenerator = () => OfferId
   implicit val uniqueOfferIdGenerator: OfferIdGenerator = () => OfferId(UUID.randomUUID().toString)
-  def fromStrings(description: String, articleId: String, discount: String, validFor: String, offerId: String = "")
+  def fromStrings(description: String, articleIds: String, discount: String, validFor: String, offerId: String = "")
                  (implicit generateId: OfferIdGenerator): Option[Offer] = {
     val id = if (offerId.nonEmpty) OfferId(offerId) else generateId()
+    val articles = articleIds.split(", ").map(ArticleId).toList
     for {
       discount <- Discount.fromString(discount)
       validFor <- ValidFor.fromString(validFor)
-    } yield Offer(description, ArticleId(articleId), discount, validFor, id)
+    } yield Offer(description, articles, discount, validFor, id)
   }
 
   case class OfferId(value: String)
