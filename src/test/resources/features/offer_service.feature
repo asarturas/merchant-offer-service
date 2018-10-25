@@ -9,7 +9,7 @@ Feature: merchant offer
       | description    | 10 pounds off the single article |
       | target article | A123                             |
       | discount       | £10.00                           |
-      | expires in     | 1 day                            |
+      | valid for      | 1 day                            |
     Then I should receive 1 offer for article "A123":
-      | description                      | discount | expires in |
-      | 10 pounds off the single article | £10.00   | 1 day      |
+      | description                      | discount | target article | valid for |
+      | 10 pounds off the single article | £10.00   | A123           | 1 day     |
