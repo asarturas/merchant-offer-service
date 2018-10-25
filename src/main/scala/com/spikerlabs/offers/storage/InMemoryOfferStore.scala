@@ -1,12 +1,14 @@
 package com.spikerlabs.offers.storage
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{ArticleId, OfferId}
+import com.spikerlabs.offers.domain.Offer.OfferId
 import com.spikerlabs.offers.storage.errors.StoreError
 
 import scala.collection.concurrent.TrieMap
 
 class InMemoryOfferStore extends OfferStore {
+
   private val inMemoryStorage = TrieMap[OfferId, Offer]()
+
   private def concurrencyError = new StoreError("was unable to store the offer as value is already updated in storage")
 
   def store(offer: Offer): Either[StoreError, OfferStore] = {
@@ -29,9 +31,9 @@ class InMemoryOfferStore extends OfferStore {
       case _ => Left(concurrencyError)
     }
 
-  def getOffers(article: Offer.ArticleId): List[Offer] =
+  def getOffers(product: Offer.Product): List[Offer] =
     inMemoryStorage.filter {
-      case (_, Offer(_, offerArticles, _, _, _)) => offerArticles.contains(article)
+      case (_, Offer(_, products, _, _, _)) => products.contains(product)
       case _ => false
     }.values.toList
 }

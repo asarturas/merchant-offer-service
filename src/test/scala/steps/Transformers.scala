@@ -7,6 +7,7 @@ import cucumber.api.DataTable
 import collection.JavaConverters._
 
 trait Transformers {
+
   def singleOfferTableToOffer: DataTable => Offer =
     singleOfferTableToInformation _ andThen singleOfferInformationToOffer
   private def singleOfferTableToInformation(singleOfferTable: DataTable): Map[String, String] =
@@ -16,7 +17,7 @@ trait Transformers {
       OfferId(singleOfferInformation("products"))
     Offer.fromStrings(
       description = singleOfferInformation("description"),
-      articleIds = singleOfferInformation("products"),
+      lostOfProducts = singleOfferInformation("products"),
       discount = singleOfferInformation("price"),
       validFor = singleOfferInformation("valid for")
     ).get
