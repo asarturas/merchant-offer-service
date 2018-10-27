@@ -9,4 +9,8 @@ object Dependencies {
     "io.cucumber" % "cucumber-jvm",
     "io.cucumber" % "cucumber-junit",
   ).map(_ % "2.0.1" % Test)
+  lazy val http4s = Seq(
+      "org.http4s"      %% "http4s-blaze-server",
+      "org.http4s"      %% "http4s-dsl",
+    ).map(_ % "0.18.19")
 }
