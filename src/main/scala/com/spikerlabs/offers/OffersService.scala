@@ -1,7 +1,7 @@
 package com.spikerlabs.offers
 
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferId}
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode}
 import com.spikerlabs.offers.storage.OfferStore
 
 import scala.util.Try
@@ -10,7 +10,7 @@ case class OffersService(private val offerStore: OfferStore)
                         (implicit timer: LocalDateTimeProvider) {
   def getOffers(product: Offer.Product): List[Offer] = offerStore.getOffers(product)
 
-  def getOffer(id: OfferId): Option[Offer] = offerStore.getOffer(id)
+  def getOffer(id: OfferCode): Option[Offer] = offerStore.getOffer(id)
 
   def addOffer(offer: Offer): Try[Unit] = Try(offerStore.store(offer)).map(_ => ())
 }

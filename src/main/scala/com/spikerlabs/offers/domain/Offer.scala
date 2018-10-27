@@ -4,32 +4,32 @@ import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneOffset}
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 import java.util.UUID
 
-import com.spikerlabs.offers.domain.Offer.{OfferId, Product, SpecialPrice, ValidUntil}
+import com.spikerlabs.offers.domain.Offer.{OfferCode, Product, SpecialPrice, ValidUntil}
 
 import scala.util.{Failure, Success, Try}
 import scala.util.matching.Regex
 
-case class Offer(description: String, articleIds: List[Product], discount: SpecialPrice, validFor: ValidUntil, id: OfferId)
+case class Offer(description: String, articleIds: List[Product], discount: SpecialPrice, validFor: ValidUntil, code: OfferCode)
 
 object Offer {
 
-  type OfferIdGenerator = () => OfferId
+  type OfferCodeGenerator = () => OfferCode
   type LocalDateTimeProvider = () => LocalDateTime
 
-  implicit val uniqueOfferIdGenerator: OfferIdGenerator = () => OfferId(UUID.randomUUID().toString)
+  implicit val uniqueOfferCodeGenerator: OfferCodeGenerator = () => OfferCode(UUID.randomUUID().toString)
   implicit val utcLocalDateTime: LocalDateTimeProvider = () => LocalDateTime.now(ZoneOffset.UTC)
 
-  def fromStrings(description: String, lostOfProducts: String, discount: String, validForOrUntilDate: String, offerId: String = "")
-                 (implicit generateId: OfferIdGenerator, timer: LocalDateTimeProvider): Option[Offer] = {
-    val id = if (offerId.nonEmpty) OfferId(offerId) else generateId()
+  def fromStrings(description: String, lostOfProducts: String, discount: String, validForOrUntilDate: String, offerCode: String = "")
+                 (implicit generateId: OfferCodeGenerator, timer: LocalDateTimeProvider): Option[Offer] = {
+    val code = if (offerCode.nonEmpty) OfferCode(offerCode) else generateId()
     val products = lostOfProducts.split(", ").map(Product).toList
     for {
       specialPrice <- SpecialPrice.fromString(discount)
       validUntil <- ValidUntil.fromString(validForOrUntilDate, timer())
-    } yield Offer(description, products, specialPrice, validUntil, id)
+    } yield Offer(description, products, specialPrice, validUntil, code)
   }
 
-  case class OfferId(value: String)
+  case class OfferCode(value: String)
 
   case class Product(value: String)
 

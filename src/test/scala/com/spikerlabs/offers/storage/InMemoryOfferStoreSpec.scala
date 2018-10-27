@@ -1,7 +1,7 @@
 package com.spikerlabs.offers.storage
 
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{utcLocalDateTime, OfferId, OfferIdGenerator, Product, SpecialPrice}
+import com.spikerlabs.offers.domain.Offer.{utcLocalDateTime, OfferCode, OfferCodeGenerator, Product, SpecialPrice}
 import org.scalatest.{FlatSpec, Matchers}
 
 class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
@@ -53,22 +53,22 @@ class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
     matchingOffers should contain allElementsOf List(validOffer)
   }
 
-  it should "return an offer by id" in new Setup {
+  it should "return an offer by code" in new Setup {
     val validOffer = Offer.fromStrings("desc", "A123", "£10", "1 day", "OFFER1").get
     store.store(validOffer)
-    val matchingOffer = store.getOffer(OfferId("OFFER1"))
+    val matchingOffer = store.getOffer(OfferCode("OFFER1"))
     matchingOffer shouldBe Some(validOffer)
   }
 
-  it should "not return expired offer by id" in new Setup {
+  it should "not return expired offer by code" in new Setup {
     val expiredOffer = Offer.fromStrings("desc", "A123", "£20", "2010-01-01", "OFFER2").get
     store.store(expiredOffer)
-    val matchingOffer = store.getOffer(OfferId("OFFER2"))
+    val matchingOffer = store.getOffer(OfferCode("OFFER2"))
     matchingOffer shouldBe None
   }
 
   trait Setup {
-    implicit val staticOfferId: OfferIdGenerator = () => OfferId("OFFER1")
+    implicit val staticOfferCode: OfferCodeGenerator = () => OfferCode("OFFER1")
     val store: OfferStore = new InMemoryOfferStore()
   }
 

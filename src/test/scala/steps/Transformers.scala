@@ -1,7 +1,7 @@
 package steps
 
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferId, OfferIdGenerator}
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, OfferCodeGenerator}
 import cucumber.api.DataTable
 
 import scala.collection.JavaConverters._
@@ -17,14 +17,14 @@ trait Transformers {
 
   private def singleOfferInformationToOffer(singleOfferInformation: Map[String, String])
                                            (implicit timer: LocalDateTimeProvider): Offer = {
-    implicit val generateIdByArticleId: OfferIdGenerator = () =>
-      OfferId(singleOfferInformation("products"))
+    implicit val generateIdByArticleId: OfferCodeGenerator = () =>
+      OfferCode(singleOfferInformation("products"))
     Offer.fromStrings(
       description = singleOfferInformation("description"),
       lostOfProducts = singleOfferInformation("products"),
       discount = singleOfferInformation("price"),
       validForOrUntilDate = singleOfferInformation.getOrElse("valid until", singleOfferInformation("valid for")),
-      offerId = singleOfferInformation.getOrElse("id", "")
+      offerCode = singleOfferInformation.getOrElse("code", "")
     ).get
   }
 

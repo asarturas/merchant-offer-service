@@ -2,7 +2,7 @@ package steps
 
 import java.time.LocalDateTime
 
-import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferId, Product}
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, Product}
 import cucumber.api.DataTable
 import org.scalatest.AppendedClues
 import steps.StatefulSteps.OfferServiceState
@@ -55,14 +55,14 @@ class OfferServiceSteps extends StatefulSteps[OfferServiceState] with Transforme
     matchingOffers should contain allElementsOf expectedOffers
   }
 
-  Then("""^I should receive an offer for id "([^"]*)":$""") { (offerCode: String, offerTable: DataTable) =>
-    val matchingOffer = state.service.getOffer(OfferId(offerCode))
+  Then("""^I should receive an offer for code "([^"]*)":$""") { (offerCode: String, offerTable: DataTable) =>
+    val matchingOffer = state.service.getOffer(OfferCode(offerCode))
     matchingOffer should not be None
     matchingOffer.get shouldBe singleOfferTableToOffer(offerTable)(state.customTimer.get)
   }
 
-  Then("""^I should receive no offers for id "([^"]*)"$""") { (offerCode: String) =>
-    state.service.getOffer(OfferId(offerCode)) shouldBe None
+  Then("""^I should receive no offers for code "([^"]*)"$""") { (offerCode: String) =>
+    state.service.getOffer(OfferCode(offerCode)) shouldBe None
   }
 
 }

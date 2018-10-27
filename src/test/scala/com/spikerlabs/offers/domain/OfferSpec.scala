@@ -3,7 +3,7 @@ package com.spikerlabs.offers.domain
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.time.format.DateTimeFormatter
 
-import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferId, OfferIdGenerator, Product, SpecialPrice, ValidUntil}
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, OfferCodeGenerator, Product, SpecialPrice, ValidUntil}
 import org.scalatest.{Matchers, WordSpec}
 
 class OfferSpec extends WordSpec with Matchers {
@@ -71,13 +71,13 @@ class OfferSpec extends WordSpec with Matchers {
     "return some offer for string with valid data" in {
       implicit val timer: LocalDateTimeProvider = () => LocalDateTime.of(LocalDate.parse("1970-01-01", DateTimeFormatter.ISO_LOCAL_DATE), LocalTime.MIN)
       Offer.fromStrings("description", "A123", "£10.00", "1 day", "OFFER2") shouldBe
-        Some(Offer("description", List(Product("A123")), SpecialPrice(10.00), ValidUntil(LocalDateTime.of(LocalDate.parse("1970-01-02", DateTimeFormatter.ISO_LOCAL_DATE), LocalTime.MIN)), OfferId("OFFER2")))
+        Some(Offer("description", List(Product("A123")), SpecialPrice(10.00), ValidUntil(LocalDateTime.of(LocalDate.parse("1970-01-02", DateTimeFormatter.ISO_LOCAL_DATE), LocalTime.MIN)), OfferCode("OFFER2")))
     }
 
-    "use offer id generator when no id is passed to the factory" in {
-      implicit val staticOfferId: OfferIdGenerator = () => OfferId("OFFER1")
+    "use offer code generator when no code is passed to the factory" in {
+      implicit val staticOfferCode: OfferCodeGenerator = () => OfferCode("OFFER1")
       import Offer.utcLocalDateTime
-      Offer.fromStrings("description", "A123", "£10", "1 day").get.id shouldBe OfferId("OFFER1")
+      Offer.fromStrings("description", "A123", "£10", "1 day").get.code shouldBe OfferCode("OFFER1")
     }
 
     "return none when discount cannot be parsed" in {
