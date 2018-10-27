@@ -23,7 +23,8 @@ trait Transformers {
       description = singleOfferInformation("description"),
       lostOfProducts = singleOfferInformation("products"),
       discount = singleOfferInformation("price"),
-      validForOrUntilDate = singleOfferInformation.getOrElse("valid until", singleOfferInformation("valid for"))
+      validForOrUntilDate = singleOfferInformation.getOrElse("valid until", singleOfferInformation("valid for")),
+      offerId = singleOfferInformation.getOrElse("id", "")
     ).get
   }
 

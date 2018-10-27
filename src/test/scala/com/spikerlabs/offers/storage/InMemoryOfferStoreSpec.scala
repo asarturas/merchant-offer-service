@@ -53,6 +53,20 @@ class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
     matchingOffers should contain allElementsOf List(validOffer)
   }
 
+  it should "return an offer by id" in new Setup {
+    val validOffer = Offer.fromStrings("desc", "A123", "£10", "1 day", "OFFER1").get
+    store.store(validOffer)
+    val matchingOffer = store.getOffer(OfferId("OFFER1"))
+    matchingOffer shouldBe Some(validOffer)
+  }
+
+  it should "not return expired offer by id" in new Setup {
+    val expiredOffer = Offer.fromStrings("desc", "A123", "£20", "2010-01-01", "OFFER2").get
+    store.store(expiredOffer)
+    val matchingOffer = store.getOffer(OfferId("OFFER2"))
+    matchingOffer shouldBe None
+  }
+
   trait Setup {
     implicit val staticOfferId: OfferIdGenerator = () => OfferId("OFFER1")
     val store: OfferStore = new InMemoryOfferStore()

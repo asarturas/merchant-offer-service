@@ -42,3 +42,21 @@ Feature: simple merchant offer for products at a special price
       | price  | products   | valid until | description        |
       | £20.00 | A123, C345 | 2018-01-04  | £20 only, buy now! |
       | £30.00 | A123, D456 | 2018-01-06  | £30 only, buy now! |
+
+  Scenario: get offer by id
+    When there are number of offers available:
+      | price  | products   | valid for | description        | id     |
+      | £10.00 | A123, B234 | 1 day     | £10 only, buy now! | OFFER1 |
+      | £20.00 | A123, C345 | 2 days    | £20 only, buy now! | OFFER2 |
+    Then I should receive an offer for id "OFFER1":
+      | products    | A123, B234         |
+      | price       | £10.00             |
+      | valid for   | 1 day              |
+      | description | £10 only, buy now! |
+      | id          | OFFER1             |
+
+  Scenario: do not get expired offers by id
+    When there are number of offers available:
+      | price  | products   | valid for  | description        | id     |
+      | £10.00 | A123, B234 | 2010-01-01 | £10 only, buy now! | OFFER1 |
+    Then I should receive no offers for id "OFFER1"

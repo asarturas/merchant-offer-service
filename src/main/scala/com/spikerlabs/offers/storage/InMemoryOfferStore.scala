@@ -39,4 +39,8 @@ class InMemoryOfferStore extends OfferStore {
         products.contains(product) && validUntil.value.isAfter(timer())
       case _ => false
     }.values.toList
+
+  def getOffer(id: OfferId)
+              (implicit timer: LocalDateTimeProvider): Option[Offer] =
+    inMemoryStorage.get(id).filter(_.validFor.value.isAfter(timer()))
 }
