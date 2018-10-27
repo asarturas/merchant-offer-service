@@ -19,13 +19,13 @@ object Offer {
   implicit val uniqueOfferIdGenerator: OfferIdGenerator = () => OfferId(UUID.randomUUID().toString)
   implicit val utcLocalDateTime: LocalDateTimeProvider = () => LocalDateTime.now(ZoneOffset.UTC)
 
-  def fromStrings(description: String, lostOfProducts: String, discount: String, validFor: String, offerId: String = "")
+  def fromStrings(description: String, lostOfProducts: String, discount: String, validForOrUntilDate: String, offerId: String = "")
                  (implicit generateId: OfferIdGenerator, timer: LocalDateTimeProvider): Option[Offer] = {
     val id = if (offerId.nonEmpty) OfferId(offerId) else generateId()
     val products = lostOfProducts.split(", ").map(Product).toList
     for {
       specialPrice <- SpecialPrice.fromString(discount)
-      validUntil <- ValidUntil.fromString(validFor, timer())
+      validUntil <- ValidUntil.fromString(validForOrUntilDate, timer())
     } yield Offer(description, products, specialPrice, validUntil, id)
   }
 

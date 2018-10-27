@@ -4,7 +4,7 @@ import com.spikerlabs.offers.domain.Offer
 import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferId, OfferIdGenerator}
 import cucumber.api.DataTable
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 
 trait Transformers {
 
@@ -23,7 +23,7 @@ trait Transformers {
       description = singleOfferInformation("description"),
       lostOfProducts = singleOfferInformation("products"),
       discount = singleOfferInformation("price"),
-      validFor = singleOfferInformation.getOrElse("valid until", singleOfferInformation("valid for"))
+      validForOrUntilDate = singleOfferInformation.getOrElse("valid until", singleOfferInformation("valid for"))
     ).get
   }
 

@@ -1,8 +1,7 @@
 package com.spikerlabs.offers
 
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.utcLocalDateTime
-import com.spikerlabs.offers.domain.Offer.Product
+import com.spikerlabs.offers.domain.Offer.{utcLocalDateTime, Product}
 import com.spikerlabs.offers.storage.InMemoryOfferStore
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -24,4 +23,5 @@ class OffersServiceSpec extends FlatSpec with Matchers {
     val store = new InMemoryOfferStore()
     val service = OffersService.withStore(store)
   }
+
 }

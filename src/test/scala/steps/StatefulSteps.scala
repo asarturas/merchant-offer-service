@@ -11,9 +11,12 @@ trait StatefulSteps[A] extends ScalaDsl with EN with Matchers {
 }
 
 object StatefulSteps {
+
   trait State
+
   case class OfferServiceState(
-    service: OffersService = OffersService.withStore(new InMemoryOfferStore),
-    customTimer: Option[LocalDateTimeProvider] = None
-  ) extends State
+                                service: OffersService = OffersService.withStore(new InMemoryOfferStore),
+                                customTimer: Option[LocalDateTimeProvider] = None
+                              ) extends State
+
 }
