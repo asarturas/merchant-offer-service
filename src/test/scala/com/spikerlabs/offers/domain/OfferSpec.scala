@@ -1,7 +1,10 @@
 package com.spikerlabs.offers.domain
 
-import com.spikerlabs.offers.domain.Offer.{Product, SpecialPrice, OfferId, OfferIdGenerator, ValidFor}
-import org.scalatest.{WordSpec, Matchers}
+import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.format.DateTimeFormatter
+
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferId, OfferIdGenerator, Product, SpecialPrice, ValidUntil}
+import org.scalatest.{Matchers, WordSpec}
 
 class OfferSpec extends WordSpec with Matchers {
 
@@ -21,14 +24,44 @@ class OfferSpec extends WordSpec with Matchers {
 
   }
 
-  "valid for factory" should {
+  "valid until factory" should {
 
-    "return some valid for value for any non empty string" in {
-      ValidFor.fromString("1 day") shouldBe Some(ValidFor("1 day"))
+    val baseTime = LocalDateTime.parse("1970-01-01T00:00:00")
+
+    "return valid until date for 1 day" in {
+      ValidUntil.fromString("1 day", baseTime) match {
+        case Some(ValidUntil(date)) => date.isEqual(baseTime.plusDays(1))
+        case otherResult => fail(s"unexpected result $otherResult")
+      }
+    }
+
+    "return valid until date for 2 days" in {
+      ValidUntil.fromString("2 days", baseTime) match {
+        case Some(ValidUntil(date)) => date.isEqual(baseTime.plusDays(2))
+        case otherResult => fail(s"unexpected result $otherResult")
+      }
+    }
+
+    "return valid until date when given a date" in {
+      ValidUntil.fromString("2010-01-01", baseTime) match {
+        case Some(ValidUntil(date)) => date.isEqual(LocalDateTime.parse("2010-01-01T00:00:00"))
+        case otherResult => fail(s"unexpected result $otherResult")
+      }
+    }
+
+    "return valid until date when given a date time" in {
+      ValidUntil.fromString("2010-01-01T01:02:03", baseTime) match {
+        case Some(ValidUntil(date)) => date.isEqual(LocalDateTime.parse("2010-01-01T01:02:03"))
+        case otherResult => fail(s"unexpected result $otherResult")
+      }
     }
 
     "return none for an empty string" in {
-      ValidFor.fromString("") shouldBe None
+      ValidUntil.fromString("", baseTime) shouldBe None
+    }
+
+    "return none for a string, which cannot be parsed" in {
+      ValidUntil.fromString("asdf", baseTime) shouldBe None
     }
 
   }
@@ -36,21 +69,25 @@ class OfferSpec extends WordSpec with Matchers {
   "offer factory" should {
 
     "return some offer for string with valid data" in {
+      implicit val timer: LocalDateTimeProvider = () => LocalDateTime.of(LocalDate.parse("1970-01-01", DateTimeFormatter.ISO_LOCAL_DATE), LocalTime.MIN)
       Offer.fromStrings("description", "A123", "£10.00", "1 day", "OFFER2") shouldBe
-        Some(Offer("description", List(Product("A123")), SpecialPrice(10.00), ValidFor("1 day"), OfferId("OFFER2")))
+        Some(Offer("description", List(Product("A123")), SpecialPrice(10.00), ValidUntil(LocalDateTime.of(LocalDate.parse("1970-01-02", DateTimeFormatter.ISO_LOCAL_DATE), LocalTime.MIN)), OfferId("OFFER2")))
     }
 
     "use offer id generator when no id is passed to the factory" in {
       implicit val staticOfferId: OfferIdGenerator = () => OfferId("OFFER1")
+      import Offer.utcLocalDateTime
       Offer.fromStrings("description", "A123", "£10", "1 day").get.id shouldBe OfferId("OFFER1")
     }
 
     "return none when discount cannot be parsed" in {
+      import Offer.utcLocalDateTime
       Offer.fromStrings("description", "A123", "x", "1 day") shouldBe
         None
     }
 
     "return none when valid for cannot be parsed" in {
+      import Offer.utcLocalDateTime
       Offer.fromStrings("description", "A123", "£10", "") shouldBe
         None
     }

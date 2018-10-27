@@ -1,7 +1,7 @@
 package com.spikerlabs.offers.storage
 
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{Product, SpecialPrice, OfferId, OfferIdGenerator}
+import com.spikerlabs.offers.domain.Offer.{utcLocalDateTime, OfferId, OfferIdGenerator, Product, SpecialPrice}
 import org.scalatest.{FlatSpec, Matchers}
 
 class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
@@ -42,6 +42,15 @@ class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
     val updatedOffer = offer.copy(discount = SpecialPrice(15.0))
     store.store(updatedOffer) shouldBe Right(store)
     store.getOffers(Product("A123")) shouldBe List(updatedOffer)
+  }
+
+  it should "only return not expired offers" in new Setup {
+    val validOffer = Offer.fromStrings("desc", "A123", "£10", "1 day", "OFFER1").get
+    val expiredOffer = Offer.fromStrings("desc", "A123", "£20", "2010-01-01", "OFFER2").get
+    store.store(validOffer).map(_.store(expiredOffer))
+    val matchingOffers = store.getOffers(Product("A123"))
+    matchingOffers should have size 1
+    matchingOffers should contain allElementsOf List(validOffer)
   }
 
   trait Setup {

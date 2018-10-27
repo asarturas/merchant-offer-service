@@ -1,6 +1,7 @@
 package com.spikerlabs.offers.storage
+
 import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.OfferId
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferId}
 import com.spikerlabs.offers.storage.errors.StoreError
 
 import scala.collection.concurrent.TrieMap
@@ -20,9 +21,9 @@ class InMemoryOfferStore extends OfferStore {
   private def updateOffer(offer: Offer): Either[StoreError, OfferStore] =
     inMemoryStorage.get(offer.id)
       .map(previousValue => inMemoryStorage.replace(offer.id, previousValue, offer)) match {
-        case Some(true) => Right(this)
-        case _ => Left(concurrencyError)
-      }
+      case Some(true) => Right(this)
+      case _ => Left(concurrencyError)
+    }
 
   // fail when trying to insert a value, which is already there (concurrency issue)
   private def insertOffer(offer: Offer): Either[StoreError, OfferStore] =
@@ -31,9 +32,11 @@ class InMemoryOfferStore extends OfferStore {
       case _ => Left(concurrencyError)
     }
 
-  def getOffers(product: Offer.Product): List[Offer] =
+  def getOffers(product: Offer.Product)
+               (implicit timer: LocalDateTimeProvider): List[Offer] =
     inMemoryStorage.filter {
-      case (_, Offer(_, products, _, _, _)) => products.contains(product)
+      case (_, Offer(_, products, _, validUntil, _)) =>
+        products.contains(product) && validUntil.value.isAfter(timer())
       case _ => false
     }.values.toList
 }
