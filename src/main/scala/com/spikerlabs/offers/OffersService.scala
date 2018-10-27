@@ -10,9 +10,11 @@ case class OffersService(private val offerStore: OfferStore)
                         (implicit timer: LocalDateTimeProvider) {
   def getOffers(product: Offer.Product): List[Offer] = offerStore.getOffers(product)
 
-  def getOffer(id: OfferCode): Option[Offer] = offerStore.getOffer(id)
+  def getOffer(code: OfferCode): Option[Offer] = offerStore.getOffer(code)
 
   def addOffer(offer: Offer): Try[Unit] = Try(offerStore.store(offer)).map(_ => ())
+
+  def cancelOffer(code: OfferCode): Unit = offerStore.cancelOffer(code)
 }
 
 object OffersService {

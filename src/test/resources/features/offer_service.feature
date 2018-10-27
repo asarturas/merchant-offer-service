@@ -57,6 +57,16 @@ Feature: simple merchant offer for products at a special price
 
   Scenario: do not get expired offers by code
     When there are number of offers available:
-      | price  | products   | valid for  | description        | code   |
-      | £10.00 | A123, B234 | 2010-01-01 | £10 only, buy now! | OFFER1 |
+      | price  | products   | valid until | description        | code   |
+      | £10.00 | A123, B234 | 2010-01-01  | £10 only, buy now! | OFFER1 |
     Then I should receive no offers for code "OFFER1"
+
+  Scenario: manually cancel offer by code
+    When there are number of offers available:
+      | price  | products   | valid for | description        | code   |
+      | £10.00 | A123, B234 | 1 day     | £10 only, buy now! | OFFER1 |
+      | £20.00 | A123, C345 | 2 days    | £20 only, buy now! | OFFER2 |
+    And I cancel the offer "OFFER1"
+    Then I should receive 1 offer for product "A123":
+      | price  | products   | valid for | description        | code   |
+      | £20.00 | A123, C345 | 2 days    | £20 only, buy now! | OFFER2 |

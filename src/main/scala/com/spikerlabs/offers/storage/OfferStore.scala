@@ -10,4 +10,6 @@ trait OfferStore {
   def getOffers(product: Product)(implicit timer: LocalDateTimeProvider): List[Offer]
 
   def getOffer(code: OfferCode)(implicit timer: LocalDateTimeProvider): Option[Offer]
+
+  def cancelOffer(code: OfferCode): Either[StoreError, OfferStore]
 }

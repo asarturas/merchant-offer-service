@@ -10,7 +10,7 @@ class InMemoryOfferStore extends OfferStore {
 
   private val inMemoryStorage = TrieMap[OfferCode, Offer]()
 
-  private def concurrencyError = new StoreError("was unable to store the offer as value is already updated in storage")
+  private def concurrencyError = new StoreError("was unable to manipulate the offer as value is already updated in storage")
 
   def store(offer: Offer): Either[StoreError, OfferStore] = {
     if (inMemoryStorage.contains(offer.code)) updateOffer(offer)
@@ -43,4 +43,10 @@ class InMemoryOfferStore extends OfferStore {
   def getOffer(id: OfferCode)
               (implicit timer: LocalDateTimeProvider): Option[Offer] =
     inMemoryStorage.get(id).filter(_.validFor.value.isAfter(timer()))
+
+  def cancelOffer(code: OfferCode): Either[StoreError, OfferStore] =
+    inMemoryStorage.get(code).map(offer => inMemoryStorage.remove(code, offer)) match {
+      case Some(true) => Right(this)
+      case _ => Left(concurrencyError)
+    }
 }

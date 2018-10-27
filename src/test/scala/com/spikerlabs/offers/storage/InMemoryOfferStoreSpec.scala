@@ -67,6 +67,14 @@ class InMemoryOfferStoreSpec extends FlatSpec with Matchers {
     matchingOffer shouldBe None
   }
 
+  it should "remove offer by code" in new Setup {
+    val code = "OFFER1"
+    val validOffer = Offer.fromStrings("desc", "A123", "£10", "1 day", code).get
+    store.store(validOffer)
+    store.cancelOffer(OfferCode(code)) shouldBe Right(store)
+    store.getOffer(OfferCode(code)) shouldBe None
+  }
+
   trait Setup {
     implicit val staticOfferCode: OfferCodeGenerator = () => OfferCode("OFFER1")
     val store: OfferStore = new InMemoryOfferStore()

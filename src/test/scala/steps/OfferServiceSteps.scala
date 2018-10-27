@@ -44,6 +44,10 @@ class OfferServiceSteps extends StatefulSteps[OfferServiceState] with Transforme
     state.service.addOffer(offer)
   }
 
+  When("""^I cancel the offer "([^"]*)"$""") { (offer: String) =>
+    state.service.cancelOffer(OfferCode(offer))
+  }
+
   When("""^there are number of offers available:$""") { (availableOffers: DataTable) =>
     multipleOffersTableToOffers(availableOffers)(state.customTimer.get).foreach(state.service.addOffer)
   }
