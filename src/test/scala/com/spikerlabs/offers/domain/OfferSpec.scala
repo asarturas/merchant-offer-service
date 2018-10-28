@@ -4,6 +4,7 @@ import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.time.format.DateTimeFormatter
 
 import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, OfferCodeGenerator, Product, SpecialPrice, ValidUntil}
+import com.spikerlabs.offers.OffersApi.OfferBody
 import org.scalatest.{Matchers, WordSpec}
 
 class OfferSpec extends WordSpec with Matchers {
@@ -66,7 +67,7 @@ class OfferSpec extends WordSpec with Matchers {
 
   }
 
-  "offer factory" should {
+  "offer factory by strings" should {
 
     "return some offer for string with valid data" in {
       implicit val timer: LocalDateTimeProvider = () => LocalDateTime.of(LocalDate.parse("1970-01-01", DateTimeFormatter.ISO_LOCAL_DATE), LocalTime.MIN)

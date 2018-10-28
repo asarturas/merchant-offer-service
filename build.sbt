@@ -4,6 +4,7 @@ lazy val root = (project in file(".")).
   enablePlugins(CucumberPlugin).
   settings(
     libraryDependencies ++= http4s,
+    libraryDependencies ++= circe,
     inThisBuild(List(
       organization := "com.spikerlabs",
       scalaVersion := "2.12.7",

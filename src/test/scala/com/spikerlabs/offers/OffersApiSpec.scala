@@ -1,28 +1,20 @@
 package com.spikerlabs.offers
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.time.format.DateTimeFormatter
 
-import com.spikerlabs.offers.domain.Offer.LocalDateTimeProvider
-import com.spikerlabs.offers.storage.InMemoryOfferStore
-import cats.effect._
-import cats.Id
-import org.http4s._
-import org.http4s.dsl.io._
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, SpecialPrice, ValidUntil}
+import com.spikerlabs.offers.OffersApi.OfferBody
+import com.spikerlabs.offers.domain.Offer
 import org.scalatest.{AppendedClues, FlatSpec, Matchers}
 
 class OffersApiSpec extends FlatSpec with Matchers with AppendedClues {
-  it should "return 404 for not existing offer" in new Setup {
-    val response: Response[IO] = api.service.orNotFound.run(
-      Request(method = Method.GET, uri = Uri.uri("/offer/OFFER404"))
-    ).unsafeRunSync
-    response.status shouldBe Status.NotFound
-    response.body.compile.toVector.unsafeRunSync should be(empty)
-  }
 
-  trait Setup {
-    implicit val staticTimer: LocalDateTimeProvider = () => LocalDateTime.parse("2010-01-01T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-    val api = OffersApi.forService[IO](OffersService.withStore(new InMemoryOfferStore))
+  "offer body" should "return some offer when data is valid" in {
+    val offerBody = OfferBody(List("A123"), "£10", "1 day", "some description", Some("CODE12"))
+    implicit val timer: LocalDateTimeProvider = () => LocalDateTime.of(LocalDate.parse("1970-01-01", DateTimeFormatter.ISO_LOCAL_DATE), LocalTime.MIN)
+    offerBody.toOffer shouldBe
+      Some(Offer("some description", List(Offer.Product("A123")), SpecialPrice(10), ValidUntil(LocalDateTime.parse("1970-01-02T00:00:00")), OfferCode("CODE12")))
   }
 
 }

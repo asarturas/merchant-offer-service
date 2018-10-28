@@ -22,7 +22,7 @@ object StatefulSteps {
                               ) extends State
 
   case class OfferApiState(
-                            api: OffersApi[IO] = OffersApi.forService(OffersService.withStore(new InMemoryOfferStore)),
+                            api: OffersApi = OffersApi.forService(OffersService.withStore(new InMemoryOfferStore)),
                             interactions: List[(Request[IO], Response[IO])] = Nil
                           ) extends State
 
