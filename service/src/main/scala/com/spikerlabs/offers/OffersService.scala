@@ -14,7 +14,7 @@ case class OffersService(private val offerStore: OfferStore)
 
   def addOffer(offer: Offer): Try[Unit] = Try(offerStore.store(offer)).map(_ => ())
 
-  def cancelOffer(code: OfferCode): Unit = offerStore.cancelOffer(code)
+  def cancelOffer(code: OfferCode): Try[Unit] = Try(offerStore.cancelOffer(code)).map(_ => ())
 }
 
 object OffersService {

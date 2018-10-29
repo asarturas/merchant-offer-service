@@ -92,3 +92,17 @@ Feature: simple merchant offer api
       ]
       """
 
+  Scenario: cancel an offer
+    Given I sent a "POST" request to "/offer":
+      """
+      {
+        "products": ["A123"],
+        "price": "£10.00",
+        "validFor": "1 day",
+        "description": "£10 only, buy now!",
+        "code": "OFFER1"
+      }
+      """
+    When I send a "DELETE" request to "/offer/OFFER1"
+    Then I should have received 204 status code
+    And consequent "GET" request to "/offer/OFFER1" should return 404 status code

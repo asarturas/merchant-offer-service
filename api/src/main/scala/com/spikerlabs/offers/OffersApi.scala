@@ -28,6 +28,12 @@ class OffersApi(offersService: OffersService)
     case request@POST -> Root / "offer" =>
       request.as[OfferRequestBody].map(_.toOffer).flatMap(addOffer)
 
+    case DELETE -> Root / "offer" / offerCode =>
+      offersService.cancelOffer(OfferCode(offerCode)) match {
+        case Success(_) => NoContent()
+        case _ => InternalServerError()
+      }
+
   }
 
   private def addOffer(maybeOffer: Option[Offer]): IO[Response[IO]] = {
