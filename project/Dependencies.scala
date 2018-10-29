@@ -16,6 +16,7 @@ object Dependencies {
   ).map(_ % "0.18.19")
   lazy val circe = Seq(
     "io.circe" %% "circe-generic",
+    "io.circe" %% "circe-parser",
     "io.circe" %% "circe-literal",
     "io.circe" %% "circe-java8"
   ).map(_ % "0.9.3")

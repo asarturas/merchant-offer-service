@@ -10,7 +10,7 @@ import org.scalatest.{AppendedClues, Matchers}
 class OfferServiceSteps extends ScalaDsl with EN with Matchers with Transformers with AppendedClues {
 
   Given("""^There is completely fresh data store$""") { () =>
-    state = state.customTimer match {
+    serviceState = serviceState.customTimer match {
       case Some(timer) =>
         implicit val customTimer: LocalDateTimeProvider = timer
         ServiceState(customTimer = Some(customTimer))
@@ -19,53 +19,52 @@ class OfferServiceSteps extends ScalaDsl with EN with Matchers with Transformers
     }
   }
 
-
   Given("""^it is midnight of "([^"]*)"$""") { (date: String) =>
     implicit val staticTimer: LocalDateTimeProvider = () => LocalDateTime.parse(s"${date}T00:00:00")
-    state = state.copy(
-      service = state.service.copy()(timer = staticTimer),
+    serviceState = serviceState.copy(
+      service = serviceState.service.copy()(timer = staticTimer),
       customTimer = Some(staticTimer)
     )
   }
 
   When("""^(\d+) days have passed$""") { (numberOfDays: Int) =>
-    if (state.customTimer.isEmpty) throw new Exception(s"Expected to have a custom timer to update, but none available on $state")
-    val updatedTime = state.customTimer.get().plusDays(numberOfDays)
+    if (serviceState.customTimer.isEmpty) throw new Exception(s"Expected to have a custom timer to update, but none available on $serviceState")
+    val updatedTime = serviceState.customTimer.get().plusDays(numberOfDays)
     implicit val updatedTimer: LocalDateTimeProvider = () => updatedTime
-    state = state.copy(
-      service = state.service.copy()(timer = updatedTimer),
+    serviceState = serviceState.copy(
+      service = serviceState.service.copy()(timer = updatedTimer),
       customTimer = Some(updatedTimer)
     )
   }
 
   When("""^I create a fixed price offer:$""") { (singleOfferTable: DataTable) =>
-    val offer = singleOfferTableToOffer(singleOfferTable)(state.customTimer.get)
-    state.service.addOffer(offer)
+    val offer = singleOfferTableToOffer(singleOfferTable)(serviceState.customTimer.get)
+    serviceState.service.addOffer(offer)
   }
 
   When("""^I cancel the offer "([^"]*)"$""") { (offer: String) =>
-    state.service.cancelOffer(OfferCode(offer))
+    serviceState.service.cancelOffer(OfferCode(offer))
   }
 
   When("""^there are number of offers available:$""") { (availableOffers: DataTable) =>
-    multipleOffersTableToOffers(availableOffers)(state.customTimer.get).foreach(state.service.addOffer)
+    multipleOffersTableToOffers(availableOffers)(serviceState.customTimer.get).foreach(serviceState.service.addOffer)
   }
 
   Then("""^I should receive (\d+) offers? for product "([^"]*)":$""") { (expectedNumberOfOffers: Int, articleId: String, expectedOffersTable: DataTable) =>
-    val matchingOffers = state.service.getOffers(Product(articleId))
-    val expectedOffers = multipleOffersTableToOffers(expectedOffersTable)(state.customTimer.get)
+    val matchingOffers = serviceState.service.getOffers(Product(articleId))
+    val expectedOffers = multipleOffersTableToOffers(expectedOffersTable)(serviceState.customTimer.get)
     matchingOffers should have size expectedNumberOfOffers withClue expectedOffers
     matchingOffers should contain allElementsOf expectedOffers
   }
 
   Then("""^I should receive an offer for code "([^"]*)":$""") { (offerCode: String, offerTable: DataTable) =>
-    val matchingOffer = state.service.getOffer(OfferCode(offerCode))
+    val matchingOffer = serviceState.service.getOffer(OfferCode(offerCode))
     matchingOffer should not be None
-    matchingOffer.get shouldBe singleOfferTableToOffer(offerTable)(state.customTimer.get)
+    matchingOffer.get shouldBe singleOfferTableToOffer(offerTable)(serviceState.customTimer.get)
   }
 
   Then("""^I should receive no offers for code "([^"]*)"$""") { (offerCode: String) =>
-    state.service.getOffer(OfferCode(offerCode)) shouldBe None
+    serviceState.service.getOffer(OfferCode(offerCode)) shouldBe None
   }
 
 }

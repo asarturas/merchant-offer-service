@@ -8,5 +8,5 @@ package object steps {
                          service: OffersService = OffersService.withStore(new InMemoryOfferStore),
                          customTimer: Option[LocalDateTimeProvider] = None
                        )
-  var state = ServiceState()
+  var serviceState = ServiceState()
 }

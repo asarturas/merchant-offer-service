@@ -5,7 +5,7 @@ Feature: simple merchant offer api
   so that merchants and customers can interact with it at will
 
   Background:
-    Given fresh api is started
+    Given the api have started on "2018-01-01"
 
   Scenario: request non existing api
     When I send a "GET" request to "/offer/OFFER404"
@@ -24,3 +24,27 @@ Feature: simple merchant offer api
       """
     Then I should have received 201 status code
     And response should contain "Location" header with value "/offer/OFFER1"
+
+Scenario: get an existing offer by id
+    Given I sent a "POST" request to "/offer":
+      """
+      {
+        "products": ["A123"],
+        "price": "£10.00",
+        "validFor": "1 day",
+        "description": "£10 only, buy now!",
+        "code": "OFFER1"
+      }
+      """
+    When I send a "GET" request to "/offer/OFFER1"
+    Then I should have received 200 status code
+    And response body should have been:
+      """
+      {
+        "products": ["A123"],
+        "price": "£10",
+        "validUntil": "2018-01-02T00:00:00",
+        "description": "£10 only, buy now!",
+        "code": "OFFER1"
+      }
+      """
