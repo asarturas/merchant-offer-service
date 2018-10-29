@@ -7,13 +7,18 @@ import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.io._
 import io.circe.syntax._
+import org.http4s.server.blaze.BlazeBuilder
 
 import scala.language.higherKinds
 import scala.util.Success
 
 class OffersApi(offersService: OffersService)
                (implicit timer: LocalDateTimeProvider) {
-  def service: HttpService[IO] = HttpService[IO] {
+
+  def httpStream(port: Int = 8080, host: String = "0.0.0.0"): BlazeBuilder[IO] =
+    BlazeBuilder[IO].bindHttp(port, host).mountService(httpService, "/")
+
+  def httpService: HttpService[IO] = HttpService[IO] {
 
     case GET -> Root / "offer" / offerCode =>
       offersService.getOffer(OfferCode(offerCode)) match {
@@ -33,6 +38,8 @@ class OffersApi(offersService: OffersService)
         case Success(_) => NoContent()
         case _ => InternalServerError()
       }
+
+    case GET -> Root / "heartbeat" => Ok("ok")
 
   }
 

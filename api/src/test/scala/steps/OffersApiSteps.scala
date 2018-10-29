@@ -26,14 +26,14 @@ class OffersApiSteps extends ScalaDsl with EN with Matchers with AppendedClues {
 
   When("""^I send a "([^"]*)" request to "([^"]*)"$""") { (methodName: String, relativeUri: String) =>
     val request: Request[IO] = Request(method = httpMethod(methodName), uri = Uri.unsafeFromString(relativeUri))
-    val response = apiState.api.service.orNotFound.run(request).unsafeRunSync
+    val response = apiState.api.httpService.orNotFound.run(request).unsafeRunSync
     apiState = apiState.copy(interactions = (request, response) :: apiState.interactions)
   }
 
   When("""^I sen[dt] a "([^"]*)" request to "([^"]*)":$""") { (methodName: String, relativeUri: String, bodyValue: String) =>
     val body: EntityBody[IO] = Stream(bodyValue).throughPure(utf8Encode)
     val request: Request[IO] = Request(method = httpMethod(methodName), uri = Uri.unsafeFromString(relativeUri), body = body)
-    val response = apiState.api.service.orNotFound.run(request).unsafeRunSync
+    val response = apiState.api.httpService.orNotFound.run(request).unsafeRunSync
     apiState = apiState.copy(interactions = (request, response) :: apiState.interactions)
   }
 
@@ -65,7 +65,7 @@ class OffersApiSteps extends ScalaDsl with EN with Matchers with AppendedClues {
 
   Then("""^consequent "([^"]*)" request to "([^"]*)" should return (\d+) status code$""") { (methodName: String, relativeUri: String, expectedCode: Int) =>
     val request: Request[IO] = Request(method = httpMethod(methodName), uri = Uri.unsafeFromString(relativeUri))
-    val response = apiState.api.service.orNotFound.run(request).unsafeRunSync
+    val response = apiState.api.httpService.orNotFound.run(request).unsafeRunSync
     apiState = apiState.copy(interactions = (request, response) :: apiState.interactions)
     apiState.lastResponse.status shouldBe httpStatus(expectedCode) withClue apiState.interactions
   }
