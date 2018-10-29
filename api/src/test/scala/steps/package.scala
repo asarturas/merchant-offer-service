@@ -14,6 +14,11 @@ package object steps {
     val api: OffersApi =
       if (customTimer.isEmpty) OffersApi.forService(service)
       else OffersApi.forService(service)(customTimer.get)
+
+    def lastResponse: Response[IO] = interactions match {
+      case Nil => throw new Exception("attempted to get last response when no api interactions are being recorded so far")
+      case (_, response) :: _ => response
+    }
   }
 
   var apiState = ApiState()

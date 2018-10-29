@@ -11,12 +11,12 @@ import io.circe.syntax._
 import scala.language.higherKinds
 import scala.util.Success
 
-class OffersApi(service: OffersService)
+class OffersApi(offersService: OffersService)
                (implicit timer: LocalDateTimeProvider) {
-  def s: HttpService[IO] = HttpService[IO] {
+  def service: HttpService[IO] = HttpService[IO] {
 
     case GET -> Root / "offer" / offerCode =>
-      service.getOffer(OfferCode(offerCode)) match {
+      offersService.getOffer(OfferCode(offerCode)) match {
         case None => NotFound()
         case Some(offer) =>
           Ok(OfferResponseBody.fromOffer(offer).asJson)
@@ -30,7 +30,7 @@ class OffersApi(service: OffersService)
   private def addOffer(maybeOffer: Option[Offer]): IO[Response[IO]] = {
     maybeOffer match {
       case Some(offer) =>
-        service.addOffer(offer) match {
+        offersService.addOffer(offer) match {
           case Success(_) => Created().map(_.putHeaders(Header("Location", s"/offer/${offer.code.value}")))
           case _ => InternalServerError()
         }
