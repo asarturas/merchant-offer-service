@@ -17,7 +17,7 @@ object OfferResponseBody {
   def fromOffer(offer: Offer): OfferResponseBody = {
     OfferResponseBody(
       offer.articleIds.map(_.value),
-      s"£${offer.discount.value.toShortExact}",
+      s"£${offer.discount.value.toString}",
       offer.validFor.value,
       offer.description,
       offer.code.value
