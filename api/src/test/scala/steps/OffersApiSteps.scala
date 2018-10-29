@@ -4,8 +4,7 @@ import java.time.LocalDateTime
 
 import cats.effect.IO
 import com.spikerlabs.offers.domain.Offer.LocalDateTimeProvider
-import com.spikerlabs.offers.OffersApi.{OfferBody, OfferResponse}
-import com.spikerlabs.offers.OffersService
+import com.spikerlabs.offers.{OfferResponseBody, OffersService}
 import cucumber.api.scala.{EN, ScalaDsl}
 import cucumber.api.DataTable
 import fs2.Stream
@@ -67,9 +66,9 @@ class OffersApiSteps extends ScalaDsl with EN with Matchers with AppendedClues {
   Then("""^response body should have been:$""") { (arg0: String) =>
     val (_, response: Response[IO]) = apiState.interactions.head
     val body = response.bodyAsText.compile.toVector.unsafeRunSync().mkString("")
-    implicit val foo2Decoder: Decoder[OfferResponse] = deriveDecoder[OfferResponse]
-    val expected = decode[OfferResponse](arg0)
-    val actual = decode[OfferResponse](body)
+    implicit val foo2Decoder: Decoder[OfferResponseBody] = deriveDecoder[OfferResponseBody]
+    val expected = decode[OfferResponseBody](arg0)
+    val actual = decode[OfferResponseBody](body)
     expected.isRight shouldBe true withClue expected
     actual.isRight shouldBe true withClue actual
     actual shouldBe expected
