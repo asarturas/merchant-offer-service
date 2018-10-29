@@ -4,19 +4,18 @@ import java.time.LocalDateTime
 
 import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, Product}
 import cucumber.api.DataTable
-import org.scalatest.AppendedClues
-import steps.StatefulSteps.OfferServiceState
+import cucumber.api.scala.{EN, ScalaDsl}
+import org.scalatest.{AppendedClues, Matchers}
 
-class OfferServiceSteps extends StatefulSteps[OfferServiceState] with Transformers with AppendedClues {
-  var state: OfferServiceState = OfferServiceState()
+class OfferServiceSteps extends ScalaDsl with EN with Matchers with Transformers with AppendedClues {
 
   Given("""^There is completely fresh data store$""") { () =>
     state = state.customTimer match {
       case Some(timer) =>
         implicit val customTimer: LocalDateTimeProvider = timer
-        OfferServiceState(customTimer = Some(customTimer))
+        ServiceState(customTimer = Some(customTimer))
       case None =>
-        OfferServiceState()
+        ServiceState()
     }
   }
 

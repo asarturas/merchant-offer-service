@@ -1,22 +1,17 @@
 package com.spikerlabs.offers
 
-import java.time.LocalDateTime
-
 import cats.effect._
-import cats.Monad
-import com.spikerlabs.offers.domain.Offer
-import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, SpecialPrice, ValidUntil}
 import com.spikerlabs.offers.OffersApi.OfferBody
-import org.http4s._
-import org.http4s.dsl.io._
-import org.http4s.circe._
+import com.spikerlabs.offers.domain.Offer
+import com.spikerlabs.offers.domain.Offer.LocalDateTimeProvider
 import io.circe.Decoder
-import io.circe._
 import io.circe.generic.semiauto._
-import io.circe.java8.time._
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.dsl.io._
 
 import scala.language.higherKinds
-import scala.util.{Failure, Success, Try}
+import scala.util.Success
 
 class OffersApi(service: OffersService)(implicit timer: LocalDateTimeProvider) {
   def s: HttpService[IO] = HttpService[IO] {

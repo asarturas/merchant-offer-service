@@ -3,9 +3,9 @@ package com.spikerlabs.offers
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.time.format.DateTimeFormatter
 
-import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, SpecialPrice, ValidUntil}
 import com.spikerlabs.offers.OffersApi.OfferBody
 import com.spikerlabs.offers.domain.Offer
+import com.spikerlabs.offers.domain.Offer.{LocalDateTimeProvider, OfferCode, SpecialPrice, ValidUntil}
 import org.scalatest.{AppendedClues, FlatSpec, Matchers}
 
 class OffersApiSpec extends FlatSpec with Matchers with AppendedClues {

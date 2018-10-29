@@ -1,21 +1,17 @@
 package steps
 
-import cats.effect.IO
-import cucumber.api.PendingException
-import org.http4s._
-import org.http4s.Headers
-import org.http4s.dsl.io._
-import org.scalatest.AppendedClues
-import steps.StatefulSteps.OfferApiState
+  import cats.effect.IO
+import cucumber.api.scala.{EN, ScalaDsl}
 import fs2.Stream
 import fs2.text.utf8Encode
+import org.http4s._
+import org.http4s.dsl.io._
+import org.scalatest.{AppendedClues, Matchers}
 
-class OffersApiSteps extends StatefulSteps[OfferApiState] with AppendedClues {
-
-  var state: OfferApiState = OfferApiState()
+class OffersApiSteps extends ScalaDsl with EN with Matchers with AppendedClues {
 
   Given("""^fresh api is started$""") { () =>
-    state = OfferApiState()
+    state = ApiState()
   }
 
   When("""^I send a "([^"]*)" request to "([^"]*)"$""") { (methodName: String, relativeUri: String) =>
@@ -39,7 +35,7 @@ class OffersApiSteps extends StatefulSteps[OfferApiState] with AppendedClues {
 
   Then("""^response should contain "([^"]*)" header with value "([^"]*)"$""") { (arg0: String, arg1: String) =>
     val (_, response: Response[IO]) = state.interactions.head
-    response.headers should contain (Header(arg0, arg1))
+    response.headers should contain(Header(arg0, arg1))
   }
 
   Then("""^I should have received (\d+) status code$""") { (arg0: Int) =>
