@@ -20,4 +20,5 @@ object Dependencies {
     "io.circe" %% "circe-literal",
     "io.circe" %% "circe-java8"
   ).map(_ % "0.9.3")
+  lazy val logging = "ch.qos.logback" % "logback-classic" % "1.2.3"
 }

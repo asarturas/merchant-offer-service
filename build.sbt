@@ -10,8 +10,6 @@ lazy val commonSettings =
 lazy val service = (project in file("service")).
   enablePlugins(CucumberPlugin).
   settings(
-    libraryDependencies ++= http4s,
-    libraryDependencies ++= circe,
     name := "service",
     commonSettings,
     commonTestSettings
@@ -22,6 +20,7 @@ lazy val api = (project in file("api")).
   settings(
     libraryDependencies ++= http4s,
     libraryDependencies ++= circe,
+    libraryDependencies += logging,
     name := "api",
     commonSettings,
     commonTestSettings
