@@ -57,12 +57,21 @@ class OffersApiSteps extends ScalaDsl with EN with Matchers with AppendedClues {
   }
 
   Then("""^response body should have been:$""") { (expectedBodyValue: String) =>
+    val expectingAList = expectedBodyValue.trim.head == '['
     val actualBodyValue = apiState.lastResponse.bodyAsText.compile.toVector.unsafeRunSync().mkString("")
-    val expectedBody = decode[OfferResponseBody](expectedBodyValue)
-    expectedBody.isRight shouldBe true withClue expectedBody
-    val actualBody = decode[OfferResponseBody](actualBodyValue)
-    actualBody.isRight shouldBe true withClue actualBody
-    actualBody shouldBe expectedBody
+    if (expectingAList) {
+      val expectedBody = decode[List[OfferResponseBody]](expectedBodyValue)
+      val actualBody = decode[List[OfferResponseBody]](actualBodyValue)
+      expectedBody.isRight shouldBe true withClue expectedBody
+      actualBody.isRight shouldBe true withClue actualBody
+      actualBody.right.get should contain allElementsOf expectedBody.right.get
+    } else {
+      val expectedBody = decode[OfferResponseBody](expectedBodyValue)
+      val actualBody = decode[OfferResponseBody](actualBodyValue)
+      expectedBody.isRight shouldBe true withClue expectedBody
+      actualBody.isRight shouldBe true withClue actualBody
+      actualBody shouldBe expectedBody
+    }
   }
 
 }

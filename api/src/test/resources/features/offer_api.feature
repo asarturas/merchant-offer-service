@@ -25,7 +25,7 @@ Feature: simple merchant offer api
     Then I should have received 201 status code
     And response should contain "Location" header with value "/offer/OFFER1"
 
-Scenario: get an existing offer by id
+  Scenario: get an existing offer by id
     Given I sent a "POST" request to "/offer":
       """
       {
@@ -48,3 +48,47 @@ Scenario: get an existing offer by id
         "code": "OFFER1"
       }
       """
+
+  Scenario: get matching offers by product id
+    Given I sent a "POST" request to "/offer":
+      """
+      {
+        "products": ["A123"],
+        "price": "£10.00",
+        "validFor": "1 day",
+        "description": "£10 only, buy now!",
+        "code": "OFFER1"
+      }
+      """
+    And I sent a "POST" request to "/offer":
+      """
+      {
+        "products": ["A123"],
+        "price": "£20.00",
+        "validFor": "2 day",
+        "description": "£20 only!",
+        "code": "OFFER2"
+      }
+      """
+    When I send a "GET" request to "/productOffers/A123"
+    Then I should have received 200 status code
+    And response body should have been:
+      """
+      [
+        {
+          "products": ["A123"],
+          "price": "£10",
+          "validUntil": "2018-01-02T00:00:00",
+          "description": "£10 only, buy now!",
+          "code": "OFFER1"
+        },
+        {
+          "products": ["A123"],
+          "price": "£20",
+          "validUntil": "2018-01-03T00:00:00",
+          "description": "£20 only!",
+          "code": "OFFER2"
+        }
+      ]
+      """
+

@@ -22,6 +22,9 @@ class OffersApi(offersService: OffersService)
           Ok(OfferResponseBody.fromOffer(offer).asJson)
       }
 
+    case GET -> Root / "productOffers" / productId =>
+      Ok(offersService.getOffers(Offer.Product(productId)).map(OfferResponseBody.fromOffer).asJson)
+
     case request@POST -> Root / "offer" =>
       request.as[OfferRequestBody].map(_.toOffer).flatMap(addOffer)
 
