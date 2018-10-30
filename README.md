@@ -158,10 +158,4 @@ curl "http://localhost:8080/offer/3f199263-f5d1-4d2d-81d6-21b67312f0f9" --verbos
 
 ## Limitations
 
-* The end to end test is very minimal;
-* The service is hardcoded to IO, could be generalised;
-* There is no cleanup of expired offers and no way for consumers to see expired offers;
-* Matching product offers could be ordered by expiration date;
-* Offer currency is hardcoded and BigDecimal is used instead of just using currency;
-* Offer validity range is limited to integer days;
-* All dates are in UTC (but it does not explicitly say so in output);
+See [issues](https://github.com/asarturas/merchant-offer-service/issues).
